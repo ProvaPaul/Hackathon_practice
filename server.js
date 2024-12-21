@@ -2,8 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
 const fs = require('fs'); // Required for reading JSON files
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(cors());
@@ -42,8 +42,8 @@ app.post('/api/chat', (req, res) => {
 });
 
 // Root route
-app.get('/', (req, res) => {
-    res.send('Welcome to the AI & API Hackathon Backend');
+app.get("/", (req, res) => {
+    res.send("Welcome to the AI & API Hackathon Backend");
 });
 
 // Start Server
