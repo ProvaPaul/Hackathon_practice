@@ -5,7 +5,7 @@ import axios from 'axios';
 function Auth({ isLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('Student'); // Default to Student role
+    const [role, setRole] = useState('student'); // Default to lowercase role
     const [name, setName] = useState('');
     const navigate = useNavigate();
 
@@ -21,6 +21,9 @@ function Auth({ isLogin }) {
                 alert('Login successful!');
                 console.log(response.data);
 
+                // Store token in localStorage or state (optional)
+                localStorage.setItem('token', response.data.token);
+
                 // Redirect to dashboard or another page
                 navigate('/dashboard'); // Redirect to the dashboard after successful login
             } else {
@@ -29,7 +32,7 @@ function Auth({ isLogin }) {
                     name,
                     email,
                     password,
-                    role,
+                    role: role.toLowerCase(), // Convert to lowercase before sending
                 });
                 alert('Registration successful!');
                 console.log(response.data);
@@ -38,8 +41,8 @@ function Auth({ isLogin }) {
                 navigate('/login');
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            console.error('Error:', error.response?.data || error.message);
+            alert(error.response?.data?.error || 'An error occurred. Please try again.');
         }
     };
 
@@ -62,8 +65,8 @@ function Auth({ isLogin }) {
                         <label>
                             Role:
                             <select value={role} onChange={(e) => setRole(e.target.value)}>
-                                <option value="Student">Student</option>
-                                <option value="Teacher">Teacher</option>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
                             </select>
                         </label>
                         <br />
