@@ -1,0 +1,18 @@
+[
+    {
+      "id": 1,
+      "title": "Introduction to AI",
+      "content": "Artificial Intelligence is the simulation of human intelligence in machines."
+    },
+    {
+      "id": 2,
+      "title": "What is Machine Learning?",
+      "content": "Machine Learning is a subset of AI that involves algorithms that learn from data."
+    },
+    {
+      "id": 3,
+      "title": "Deep Learning Basics",
+      "content": "Deep Learning is a subset of Machine Learning that uses neural networks with many layers."
+    }
+  ]
+  
