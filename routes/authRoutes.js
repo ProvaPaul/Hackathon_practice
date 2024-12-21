@@ -2,12 +2,10 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const vision = require("@google-cloud/vision");
+const Tesseract = require("tesseract.js");
 const User = require("../models/User");
 const router = express.Router();
-
-// Initialize Google Vision client
-const client = new vision.ImageAnnotatorClient();
+const TextModel = require("../models/Text");
 
 // Configure multer for file uploads
 const upload = multer({ storage: multer.memoryStorage() });
@@ -53,14 +51,19 @@ router.post("/process-image", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded." });
     }
 
-    // Use Google Vision to extract text from the uploaded image
-    const [result] = await client.textDetection(req.file.buffer);
-    const detections = result.textAnnotations;
+    // Use async/await with Tesseract.js to extract text from the uploaded image
+    const {
+      data: { text },
+    } = await Tesseract.recognize(req.file.buffer, "eng", {
+      logger: (m) => console.log(m), // Log progress
+    });
 
-    // Extract the text from the response
-    const extractedText = detections[0]?.description || "No text found";
+    // Save the extracted text to MongoDB
+    const newText = new TextModel({ text });
+    await newText.save();
 
-    res.json({ text: extractedText });
+    // Send the extracted text as a response
+    res.json({ text, id: newText._id });
   } catch (error) {
     console.error("Error processing the image:", error);
     res.status(500).json({ error: "Failed to process the image." });
