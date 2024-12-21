@@ -1,33 +1,97 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Auth({ isLogin }) {
-    const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'student' });
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [role, setRole] = useState('Student'); // Default to Student role
+    const [name, setName] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const url = isLogin ? '/api/auth/login' : '/api/auth/register';
         try {
-            const response = await axios.post(url, formData);
-            alert(isLogin ? 'Logged in successfully!' : 'Registered successfully!');
+            if (isLogin) {
+                // Login request
+                const response = await axios.post('http://localhost:3000/api/auth/login', {
+                    email,
+                    password,
+                });
+                alert('Login successful!');
+                console.log(response.data);
+
+                // Redirect to dashboard or another page
+                navigate('/dashboard'); // Redirect to the dashboard after successful login
+            } else {
+                // Register request
+                const response = await axios.post('http://localhost:3000/api/auth/register', {
+                    name,
+                    email,
+                    password,
+                    role,
+                });
+                alert('Registration successful!');
+                console.log(response.data);
+
+                // Redirect to the login page after successful registration
+                navigate('/login');
+            }
         } catch (error) {
-            alert('Error: ' + error.response.data.error);
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {!isLogin && <input type="text" placeholder="Name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />}
-            <input type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-            <input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-            {!isLogin && (
-                <select onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                </select>
-            )}
-            <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
-        </form>
+        <div>
+            <h2>{isLogin ? 'Login' : 'Register'}</h2>
+            <form onSubmit={handleSubmit}>
+                {!isLogin && (
+                    <>
+                        <label>
+                            Name:
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Role:
+                            <select value={role} onChange={(e) => setRole(e.target.value)}>
+                                <option value="Student">Student</option>
+                                <option value="Teacher">Teacher</option>
+                            </select>
+                        </label>
+                        <br />
+                    </>
+                )}
+                <label>
+                    Email:
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </label>
+                <br />
+                <label>
+                    Password:
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </label>
+                <br />
+                <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
+            </form>
+        </div>
     );
 }
 
